@@ -1,0 +1,174 @@
+img {
+    height: 10vh;
+}
+
+/*Animaciones */
+/*SOL*/
+.sol {
+    height: 15vh;
+    animation-name: sol;
+    animation-iteration-count: infinite;
+    animation-duration: 4s;
+    animation-timing-function: linear;
+}
+
+@keyframes sol {
+    0% {
+        transform: rotate(0deg)
+    }
+
+    50% {
+        transform: rotate(180deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/*NUBES*/
+.nube {
+    animation-name: nube;
+    animation-iteration-count: infinite;
+    animation-duration: 5s;
+    /**/
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes nube {
+    0% {
+        transform: scale(1);
+    }
+
+    33% {
+        transform: scale(1.1);
+    }
+
+    66% {
+        transform: scale(0.9);
+    }
+}
+
+.nube2 {
+    /*nombre, duración, timing-function, iteraciones*/
+    animation: nube2 5s ease-in-out infinite;
+}
+
+@keyframes nube2 {
+    20% {
+        transform: scale(1.1);
+    }
+
+    40% {
+        transform: scale(1);
+    }
+
+    60% {
+        transform: scale(1.15)
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/*GOTAS*/
+.gota {
+    position: absolute;
+    height: 20px;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in;
+    transform: rotate(30deg);
+}
+
+.g1 {
+    animation-name: g1;
+    animation-duration: 0.27s;
+}
+
+@keyframes g1 {
+    100% {
+        transform: translate(-20px, 30px) rotate(30deg);
+    }
+}
+
+.g2 {
+    animation-name: g2;
+    animation-duration: 0.2s;
+}
+
+@keyframes g2 {
+    0% {
+        transform: translate(30px, 0);
+    }
+
+    100% {
+        transform: translate(20px, 30px) rotate(30deg);
+    }
+}
+
+.g3 {
+    animation-name: g3;
+    animation-duration: 0.34s;
+}
+
+@keyframes g3 {
+    0% {
+        transform: translate(25px, 0);
+    }
+
+    100% {
+        transform: translate(15px, 30px) rotate(30deg);
+    }
+}
+
+
+
+
+/*NIEVE*/
+.nieve {
+    position: absolute;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in;
+}
+
+.n1 {
+    animation-name: n1;
+    animation-duration: 3s;
+}
+
+@keyframes n1 {
+    100% {
+        transform: translate(70px,300px) rotate(360deg);
+    }
+}
+
+.n2 {
+    animation-name: n2;
+    animation-duration: 5s;
+}
+
+@keyframes n2 {
+    0% {
+        transform: translate(50px, 0);
+    }
+
+    100% {
+        transform: translate(100px, 300px) rotate(360deg);
+    }
+}
+
+.n3 {
+    animation-name: n3;
+    animation-duration: 4s;
+}
+
+@keyframes n3 {
+    0% {
+        transform: translate(100px, 0);
+    }
+
+    100% {
+        transform: translate(200px, 300px) rotate(360deg);
+    }
+}

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>El tiempo</title>
+    <link rel="stylesheet" href="./styles/meteo.css">
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script>
+        $(function () {
+            var codigoTiempo;
+
+            //Se ejecutará esta acadena al hacer click en el botón con id="buscar"
+            $("#buscar").click(function () {
+                //La cadena contiene los datos a mostrar
+                var cadena = "";
+                //El día que quiero mostrar
+                var dia;
+                //Imagen de carga
+                $("#cambia").html("<img src='./ajax-loader.gif'>");
+                //La función de consulta
+                $.get("https://api.weatherbit.io/v2.0/forecast/daily", {
+                    key: "809d641bbe504ff0809daaed052c5303",
+                    lang: "es",
+                    city: $("#ciudad").val(),
+                    country: $("#pais").val()
+
+                }, function (prevision, estado) {
+                    //Compruebo que funciona corrrectamente
+                    if (estado == "success") {
+                        //Inicio de la cadena para buscar
+                        var consulta = prevision["data"][+$("#dia").val()];
+
+                        //Muestro el día que quiero mostrar
+                        var fechaFea = new Date(consulta["datetime"]);
+                        //Meto los días de la semana y los meses en un array para acceder directamente a ellos
+                        var dias = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+                        var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+                        var fecha = dias[fechaFea.getDay()] + " " + fechaFea.getDate() + " de " + meses[fechaFea.getMonth()] + " del " + fechaFea.getFullYear();
+                        cadena += "Previsión para el " + fecha + "<br>";
+
+
+                        // Y empiezo a buscar y guardar datos
+                        if (comprobarCheckbox('temperatura')) {
+                            cadena += "Temperatura: " + consulta["temp"];
+                        }
+
+
+                        if (comprobarCheckbox("viento") && consulta["wind_cdir_full"] != null) {
+                            cadena += "<br>Viento: Dirección " + consulta["wind_cdir_full"] + " y una velocidad de " + consulta["wind_spd"] + "m/s";
+                        }
+
+                        if (comprobarCheckbox('estado')) {
+                            //Como todos los códigos son números, prefiero tratarlos como tal.
+                            if (parseInt(consulta["weather"]["code"]) != NaN) {
+                                codigoTiempo = parseInt(consulta["weather"]["code"]);
+                            } else {
+                                codigoTiempo = consulta["weather"]["code"];
+                            }
+
+                            cadena += "<br>Estado: ";
+                            //Los que no tengo animación preparada, cargo la que tiene weatherbit
+                            if ((codigoTiempo >= 200 && codigoTiempo < 300) || (codigoTiempo >= 700 && codigoTiempo < 800)) {
+                                cadena += enlaceImagen + consulta["weather"]["icon"] + extensionimagen;
+
+                                //Los que tengo animación preparada, cargo la mía
+                            } else {
+                                cadena += mostrarIconos(codigoTiempo);
+                            }
+
+                            cadena += " " + consulta["weather"]["description"];
+                        }
+
+                        comprobarCheckbox("presion") ? cadena += "<br>Presión atmosférica: " + consulta["pres"] + "mb" : cadena += "";
+
+                        comprobarCheckbox("nubosidad") ? cadena += "<br>Nubosidad: " + consulta["clouds"] + "%" : cadena += "";
+
+                        comprobarCheckbox("humedad") ? cadena += "<br>Humedad: " + consulta["rh"] + "%" : cadena += "";
+                        $("#cambia").html(cadena);
+
+                    } else { //Indico que hay un error, y lo muestro por consola
+                        cadena = "Error. Llama al informático.";
+                        console.log("Estado: " + estado)
+                    }
+
+                    function comprobarCheckbox(checkbox) {
+                        let comp = false;
+                        console.log('hola')
+                        if ($('#' + checkbox).prop('checked')) {
+                            comp = true;
+                        }
+                        return comp;
+                    }
+                })
+            })
+
+            $("#contaminacion").click(function () {
+                var cadenaContaminacion = "";
+                //Ponemos una imagen de carga:
+                $("#cambia").html("<img src='./ajax-loader.gif'>");
+
+                //Y empiezan las consultas
+                $.get("https://api.weatherbit.io/v2.0/current/airquality", {
+                        key: "809d641bbe504ff0809daaed052c5303",
+                        lang: "es",
+                        city: $("#ciudad").val(),
+                        country: $("#pais").val()
+                    },
+                    function (contaminacion, estado) {
+                        if (estado == "success") {
+                            cadenaContaminacion += "Calidad del aire: " + contaminacion["data"][0]["aqi"];
+                            cadenaContaminacion += "<br>Ozono: " + contaminacion["data"][0]["o3"] + "µg/m<sup>3</sup>";
+                            cadenaContaminacion += "<br>Dióxido de nitrógeno: " + contaminacion["data"][0]["no2"] + "µg/m<sup>3</sup>";
+                            cadenaContaminacion += "<br>Dióxido de azufre: " + contaminacion["data"][0]["so2"] + "µg/m<sup>3</sup>";
+                            cadenaContaminacion += "Concentración de partículas menores de 10 micras: " + contaminacion["data"][0]["pm10"] + "µg/m<sup>3</sup>";
+                        }
+                        console.log(cadenaContaminacion);
+                        console.log(contaminacion["data"][0]);
+                        $("#cambia").html(cadenaContaminacion);
+                    }, "json");
+
+            });
+
+
+        })
+
+        function mostrarIconos(codigoTiempo) {
+            //Dependiendo del tiempo que haga, escojo una cosa u otra
+            /*Códigos:
+            521 == nube sol lluvia
+            600, 621 == nube sol nieve
+            622 == nube sol nieve++
+            610, 611, 612 == nube sol nieve lluvia
+            3* 5*, 900 == nube y lluvia
+            6* == nube y nieve
+            800 == sol
+            801 - 803 == sol y nubes
+            804 == nubes
+            7* == default
+            2* ==  default
+            */
+
+            var enlaceImagenMia = "<img src=\"./img/";
+            var extensionimagenMia = ".svg\" class=";
+            //Creo variables para legibilidad del código:
+            var addSol = enlaceImagenMia + "sol" + extensionimagenMia + "\"sol\">";
+            var addNube = enlaceImagenMia + "nube" + extensionimagenMia + "\"nube\">";
+            var addNieve1 = enlaceImagenMia + "copo1" + extensionimagenMia + enlaceImagenMia + "copo2" + extensionimagenMia;
+            var addNieve2 = enlaceImagenMia + "copo3" + extensionimagenMia;
+            var addLluvia = enlaceImagenMia + "gota" + extensionimagenMia + "\"gota g1\">" + enlaceImagenMia + "gota" + extensionimagenMia + "\"gota g2\">" + enlaceImagenMia + "gota" + extensionimagenMia + "\"gota g3\">";
+            cadenaIconos = "";
+
+            //Es la única en la que no aparecen nubes, la pongo aparte
+            if (codigoTiempo == 800) {
+                cadenaIconos += addSol;
+            } else {
+                cadenaIconos += addNube; //Con esto ya tengo el código 804
+                //ahora repaso codigo por codigo
+                if (codigoTiempo == 521) {
+                    cadenaIconos += addSol + addLluvia;
+                } else if (codigoTiempo == 600 || codigoTiempo == 621) {
+                    cadenaIconos += addSol + addNieve1;
+                } else if (codigoTiempo == 622) {
+                    cadenaIconos += addSol + addNieve1 + addNieve2;
+                    // probar codigo>= 610 && codigo <=612 
+                } else if (codigoTiempo >= 610 && codigoTiempo <= 612) {
+                    cadenaIconos += addSol + addNieve1 + addLluvia;
+                } else if ((codigoTiempo >= 300 && codigoTiempo < 400) ||
+                    (codigoTiempo >= 500 && codigoTiempo < 600) || codigoTiempo == 900) {
+                    cadenaIconos += addLluvia;
+                } else if (codigoTiempo >= 600 && codigoTiempo < 700) {
+                    cadenaIconos += addNieve1;
+                } else if (codigoTiempo >= 801 && codigoTiempo <= 803) {
+                    cadenaIconos += addSol;
+                }
+            }
+
+            return cadenaIconos;
+        }
+
+    </script>
+</head>
+
+<body>
+    <header>Aplicación para ver el tiempo</header>
+    <main>
+        <fieldset>
+            <legend>Selecciona el país:</legend>
+            <select id="pais" class="form-control" required>
+                <script>
+                    $(function () {
+                        $("#pais").ready(function () {
+                            var cadena = "";
+                            var abrirOption = "<option value=\"";
+                            var cerrarValue = "\">";
+                            var cerrarOption = "</option>";
+                            //$("#cambia").html("<img src='ajax-loader.gif'>");
+                            $.ajax({
+                                url: "./metadata/paises.json",
+                                type: "GET",
+                                dataType: "json",
+                                // Si se produce correctamente
+                                success: function (datos_devueltos) {
+                                    for (var i = 0; i < datos_devueltos.length; i++) {
+                                        //Compruebo que el nombre no esté vacío
+                                        if (datos_devueltos[i].country_name != "") {
+                                            if (datos_devueltos[i].country_name == "Spain") {
+                                                cadena += abrirOption + datos_devueltos[i].country_code + "\" selected>España" + cerrarOption
+                                            } else {
+                                                cadena += abrirOption + datos_devueltos[i].country_code + cerrarValue + datos_devueltos[i].country_name + cerrarOption;
+                                            }
+                                        }
+                                    }
+                                    $("#pais").append(cadena);
+
+                                },
+                                // Si la petición falla
+                                error: function (xhr, estado, error_producido) {
+                                    console.log("Error producido: " + error_producido);
+                                    console.log("Estado: " + estado);
+
+                                }
+
+                            });
+
+                        });
+                    });
+
+                </script>
+            </select>
+        </fieldset>
+
+        <fieldset>
+            <legend>Introduce la ciudad:</legend>
+            <input type="text" id="ciudad">
+        </fieldset>
+
+        <fieldset>
+            <legend>Introduce para cuándo quieres ver la previsión</legend>
+            <input type="number" id="dia" min="0" max="15">
+        </fieldset>
+        <fieldset>
+            <legend>
+                Elige los datos que quieres ver:
+            </legend>
+            <label>Temperatura<input type="checkbox" id="temperatura"></label>
+            <label>Viento<input type="checkbox" id="viento"></label>
+            <label>Estado (sol, nubes...)<input type="checkbox" id="estado"></label>
+            <label>Presión<input type="checkbox" id="presion"></label>
+            <label>Nubosidad<input type="checkbox" id="nubosidad"></label>
+            <label>Humedad<input type="checkbox" id="humedad"></label>
+        </fieldset>
+        <button id="buscar">Buscar</button>
+        <button id="contaminacion">Mostrar los niveles de contaminación actual</button>
+        <div id="cambia">
+            <h2>Cambia el contenido</h2>
+        </div>
+    </main>
+</body>
+
+</html>
