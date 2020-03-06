@@ -74,7 +74,7 @@ img {
 
 /*GOTAS*/
 .gota {
-    position: absolute;
+    
     height: 20px;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in;
@@ -127,7 +127,7 @@ img {
 
 /*NIEVE*/
 .nieve {
-    position: absolute;
+    height: 20px;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in;
 }
@@ -139,7 +139,7 @@ img {
 
 @keyframes n1 {
     100% {
-        transform: translate(70px,300px) rotate(360deg);
+        transform: translate(70px,30px) rotate(360deg);
     }
 }
 
@@ -154,7 +154,7 @@ img {
     }
 
     100% {
-        transform: translate(100px, 300px) rotate(360deg);
+        transform: translate(100px, 30px) rotate(360deg);
     }
 }
 
@@ -169,6 +169,10 @@ img {
     }
 
     100% {
-        transform: translate(200px, 300px) rotate(360deg);
+        transform: translate(200px, 30px) rotate(360deg);
     }
+}
+
+.divNieve, .divGota {
+    height: 50px;
 }

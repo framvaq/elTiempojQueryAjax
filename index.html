@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>El tiempo</title>
     <link rel="stylesheet" href="./styles/meteo.css">
-
+    <link rel="stylesheet" href="https://bootswatch.com/4/lumen/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script>
         $(function () {
@@ -185,79 +185,131 @@
 
 <body>
     <header>Aplicación para ver el tiempo</header>
-    <main>
-        <fieldset>
-            <legend>Selecciona el país:</legend>
-            <select id="pais" class="form-control" required>
-                <script>
-                    $(function () {
-                        $("#pais").ready(function () {
-                            var cadena = "";
-                            var abrirOption = "<option value=\"";
-                            var cerrarValue = "\">";
-                            var cerrarOption = "</option>";
-                            //$("#cambia").html("<img src='ajax-loader.gif'>");
-                            $.ajax({
-                                url: "./metadata/paises.json",
-                                type: "GET",
-                                dataType: "json",
-                                // Si se produce correctamente
-                                success: function (datos_devueltos) {
-                                    for (var i = 0; i < datos_devueltos.length; i++) {
-                                        //Compruebo que el nombre no esté vacío
-                                        if (datos_devueltos[i].country_name != "") {
-                                            if (datos_devueltos[i].country_name == "Spain") {
-                                                cadena += abrirOption + datos_devueltos[i].country_code + "\" selected>España" + cerrarOption
-                                            } else {
-                                                cadena += abrirOption + datos_devueltos[i].country_code + cerrarValue + datos_devueltos[i].country_name + cerrarOption;
+    <div class="row">
+        <main class="col-ms-7 col-md-7">
+
+                <fieldset>
+                    <label for="pais">Selecciona el país:</label>
+                    <select id="pais" class="form-control" required></select>
+
+                    <script>
+                        $(function () {
+                            $("#pais").ready(function () {
+                                var cadena = "";
+                                var abrirOption = "<option value=\"";
+                                var cerrarValue = "\">";
+                                var cerrarOption = "</option>";
+                                //$("#cambia").html("<img src='ajax-loader.gif'>");
+                                $.ajax({
+                                    url: "./metadata/paises.json",
+                                    type: "GET",
+                                    dataType: "json",
+                                    // Si se produce correctamente
+                                    success: function (datos_devueltos) {
+                                        for (var i = 0; i < datos_devueltos.length; i++) {
+                                            //Compruebo que el nombre no esté vacío
+                                            if (datos_devueltos[i].country_name != "") {
+                                                if (datos_devueltos[i].country_name == "Spain") {
+                                                    cadena += abrirOption + datos_devueltos[i].country_code + "\" selected>España" + cerrarOption
+                                                } else {
+                                                    cadena += abrirOption + datos_devueltos[i].country_code + cerrarValue + datos_devueltos[i].country_name + cerrarOption;
+                                                }
                                             }
                                         }
+                                        $("#pais").append(cadena);
+
+                                    },
+                                    // Si la petición falla
+                                    error: function (xhr, estado, error_producido) {
+                                        console.log("Error producido: " + error_producido);
+                                        console.log("Estado: " + estado);
+
                                     }
-                                    $("#pais").append(cadena);
 
-                                },
-                                // Si la petición falla
-                                error: function (xhr, estado, error_producido) {
-                                    console.log("Error producido: " + error_producido);
-                                    console.log("Estado: " + estado);
-
-                                }
+                                });
 
                             });
-
                         });
-                    });
 
-                </script>
-            </select>
-        </fieldset>
+                    </script>
+                    </select>
+                </fieldset>
 
-        <fieldset>
-            <legend>Introduce la ciudad:</legend>
-            <input type="text" id="ciudad">
-        </fieldset>
+                <fieldset>
+                    <legend>Introduce la ciudad:</legend>
+                    <input type="text" id="ciudad" class="form-control">
+                </fieldset>
 
-        <fieldset>
-            <legend>Introduce para cuándo quieres ver la previsión</legend>
-            <input type="number" id="dia" min="0" max="15">
-        </fieldset>
-        <fieldset>
-            <legend>
-                Elige los datos que quieres ver:
-            </legend>
-            <label>Temperatura<input type="checkbox" id="temperatura"></label>
-            <label>Viento<input type="checkbox" id="viento"></label>
-            <label>Estado (sol, nubes...)<input type="checkbox" id="estado"></label>
-            <label>Presión<input type="checkbox" id="presion"></label>
-            <label>Nubosidad<input type="checkbox" id="nubosidad"></label>
-            <label>Humedad<input type="checkbox" id="humedad"></label>
-        </fieldset>
-        <button id="buscar">Buscar</button>
-        <button id="contaminacion">Mostrar los niveles de contaminación actual</button>
-        <div id="cambia">
-            <h2>Cambia el contenido</h2>
-        </div>
-    </main>
+                <fieldset>
+                    <legend>Introduce para cuándo quieres ver la previsión</legend>
+                    <input type="number" id="dia" min="0" max="15" class="form-control">
+                </fieldset>
+                <fieldset>
+                    <legend>
+                        Elige los datos que quieres ver:
+                    </legend>
+                    <label>Temperatura<input type="checkbox" id="temperatura" class="form-control"></label>
+                    <label>Viento<input type="checkbox" id="viento" class="form-control"></label>
+                    <label>Estado (sol, nubes...)<input type="checkbox" id="estado" class="form-control"></label>
+                    <label>Presión<input type="checkbox" id="presion" class="form-control"></label>
+                    <label>Nubosidad<input type="checkbox" id="nubosidad" class="form-control"></label>
+                    <label>Humedad<input type="checkbox" id="humedad" class="form-control"></label>
+                </fieldset>
+                <button id="buscar" class="form-control">Buscar</button>
+                <button id="contaminacion" class="form-control">Mostrar niveles de contaminación</button>
+                <div id="cambia">
+                    <h2>Cambia el contenido</h2>
+                </div>
+            
+        </main>
+
+        <aside class="hidden col-ms-5 col-md-5" id="ayuda">
+            <h1>Explicación iconos: </h1>
+            <div class="row divNieve">
+                <div class="col-ms-4 col-md-4">
+                    <img src="img/copo1.svg" class="nieve n1">
+                    <p>Nieve, hay distintos tipos para darle más realismo</p>
+                </div>
+                <div class="col-ms-4 col-md-4">
+                    <img src="img/copo2.svg" class="nieve n2">
+                    <p>Nieve, hay distintos tipos para darle más realismo</p>
+                </div>
+                <div class="col-ms-4 col-md-4">
+                    <img src="img/copo3.svg" class="nieve n3">
+                    <p>Nieve, hay distintos tipos para darle más realismo</p>
+                </div>
+            </div>
+            <div class="row" class="divGota">
+                <div class="col-ms-4 col-md-4">
+                    <img src="img/gota.svg" class="gota g1">
+                    <p>Lluvioso, hay distintos tipos para darle más realismo</p>
+                </div>
+                <div class="col-ms-4 col-md-4">
+                    <img src="img/gota.svg" class="gota g2">
+                    <p>Lluvioso, hay distintos tipos para darle más realismo</p>
+                </div>
+                <div class="col-ms-4 col-md-4">
+                    <img src="img/gota.svg" class="gota g3">
+                    <p>Lluvioso, hay distintos tipos para darle más realismo</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-ms-4 col-md-4">
+                    <img src="img/nube.svg" class="nube2">
+                    <p>Nublado 1</p>
+                </div>
+                <div class="col-ms-4 col-md-4">
+                    <img src="img/nube.svg" class="nube">
+                    <p>Nublado 2</p>
+                </div>
+                <div class="col-ms-4-col-md-4">
+                    <img src="img/sol.svg" class="sol">
+                    <p>Soleado</p>
+                </div>
+            </div>
+
+        </aside>
+    </div>
 </body>
 
 </html>
