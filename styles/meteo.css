@@ -5,7 +5,6 @@ img {
 /*Animaciones */
 /*SOL*/
 .sol {
-    height: 15vh;
     animation-name: sol;
     animation-iteration-count: infinite;
     animation-duration: 4s;
@@ -171,8 +170,4 @@ img {
     100% {
         transform: translate(200px, 30px) rotate(360deg);
     }
-}
-
-.divNieve, .divGota {
-    height: 50px;
 }
